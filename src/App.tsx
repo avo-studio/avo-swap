@@ -11,6 +11,8 @@ import { usePollCoreFarmData } from 'state/farms/hooks'
 import { useFetchProfile } from 'state/profile/hooks'
 import { DatePickerPortal } from 'components/DatePicker'
 import { nftsBaseUrl } from 'views/Nft/market/constants'
+import SellNFT from 'views/Nft/sell/SellNFT'
+import BuyNFT from 'views/Nft/buy/BuyNFT'
 import GlobalStyle from './style/Global'
 import Menu from './components/Menu'
 import SuspenseWithChunkError from './components/SuspenseWithChunkError'
@@ -30,6 +32,7 @@ import {
 import RedirectOldRemoveLiquidityPathStructure from './views/RemoveLiquidity/redirects'
 import { RedirectPathToSwapOnly, RedirectToSwap } from './views/Swap/redirects'
 import { useInactiveListener } from './hooks/useInactiveListener'
+
 
 // Route-based code splitting
 // Only pool is included in the main bundle because of it's the most visited page
@@ -99,8 +102,14 @@ const App: React.FC = () => {
               <Nft />
             </Route>
 
-            <Route path="/viewNFT">
+            <Route path="/viewNFTs">
               <ViewNFTs />
+            </Route>
+            <Route path="/sellNFT">
+              <SellNFT />
+            </Route>
+            <Route path="/buyNFT">
+              <BuyNFT />
             </Route>
             <Route path="/nftmarket">
               <NftMarket />

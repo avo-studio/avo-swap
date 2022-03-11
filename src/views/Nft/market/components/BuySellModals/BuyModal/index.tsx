@@ -23,6 +23,7 @@ import ConfirmStage from '../shared/ConfirmStage'
 import ApproveAndConfirmStage from '../shared/ApproveAndConfirmStage'
 import { PaymentCurrency, BuyingStage } from './types'
 import TransactionConfirmed from '../shared/TransactionConfirmed'
+import { getNftMarketAddress } from 'utils/addressHelpers'
 
 const modalTitles = {
   [BuyingStage.REVIEW]: 'Review',
@@ -46,7 +47,7 @@ const BuyModal: React.FC<BuyModalProps> = ({ nftToBuy, onDismiss }) => {
 
   const { account } = useWeb3React()
   const wbnbContract = useERC20(tokens.wbnb.address)
-  const nftMarketContract = useNftMarketContract()
+  const nftMarketContract = useNftMarketContract(getNftMarketAddress())
 
   const { toastSuccess } = useToast()
   const dispatch = useAppDispatch()

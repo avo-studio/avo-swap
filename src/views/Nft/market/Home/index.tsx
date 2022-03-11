@@ -66,7 +66,11 @@ const Home = () => {
             <Heading scale="lg" color="text">
               {t('Buy and Sell NFTs on Binance Smart Chain')}
             </Heading>
-            
+            {account && (
+              <Button as={Link} to={`${nftsBaseUrl}/profile/${account.toLowerCase()}`} mt="32px">
+                {t('Manage/Sell')}
+              </Button>
+            )}
           </div>
           <SearchBar />
         </StyledHeaderInner>

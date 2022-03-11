@@ -19,6 +19,10 @@ export const getMulticallAddress = () => {
 export const getDNFTAddress = () => {
   return getAddress(addresses.Nft)
 }
+
+export const getNftMarketAddress = () => {
+  return getAddress(addresses.nftmarket)
+}
 export const getLotteryV2Address = () => {
   return getAddress(addresses.lotteryV2)
 }
@@ -70,9 +74,7 @@ export const getFarmAuctionAddress = () => {
 export const getAnniversaryAchievement = () => {
   return getAddress(addresses.AnniversaryAchievement)
 }
-export const getNftMarketAddress = () => {
-  return getAddress(addresses.nftMarket)
-}
+
 export const getNftSaleAddress = () => {
   return getAddress(addresses.nftSale)
 }

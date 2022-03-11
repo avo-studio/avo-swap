@@ -55,7 +55,7 @@ const config: (t: ContextApi['t']) => ConfigMenuItemsType[] = (t) => [
       },
       {
         label: t('View your NFTs'),
-        href: '/viewNFT',
+        href: '/viewNFTs',
       },
       {
         label: t('Market'),

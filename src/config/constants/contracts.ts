@@ -59,6 +59,10 @@ export default {
     56: '0x5C5C3025eEB5342e87b23D68e13ab202bEBCf013',
     97: '',
   },
+  nftmarket: {
+    56: '0x065a1A63C62470cEe234ee250736Ed3446460342',
+    97: '',
+  },
   predictions: {
     56: '0x18B2A687610328590Bc8F2e5fEdDe3b582A49cdA',
     97: '',

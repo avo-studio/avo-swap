@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
@@ -17,7 +17,6 @@ import { useGetDragonBalance } from 'hooks/useTokenBalance'
 import useToast from 'hooks/useToast'
 
 interface Props {
-    cost:number,
     qty:number,
     onSuccess: (amount: BigNumber) => void
     onDismiss?: () => void
@@ -29,7 +28,7 @@ const multiplierValues = [0.1, 0.25, 0.5, 0.75, 1]
 const gasPrice = BIG_TEN.times(BIG_TEN.pow(BIG_NINE)).toString()
 
 const MintModal: React.FC<Props> = ({
-    cost,
+   
     qty,
   onDismiss,
   onSuccess,
@@ -49,8 +48,15 @@ const MintModal: React.FC<Props> = ({
   const valueWithTokenDecimals = new BigNumber(value).times(DEFAULT_TOKEN_DECIMAL)
   const [isDisable, setIsDisable] = useState(false)
   const [steps, setSteps] = useState(0);
+  const [cost, setCost] = useState(0);
   const [allownce, setAllownce] = useState(0);
-  
+  useEffect(()=>{
+    async function loadData(){
+      const costpublic=await contract.costPublic.call();
+      setCost(costpublic);
+    }
+    loadData();
+  },[account,contract])
 
   return (
     <Modal title={t('', { })} onDismiss={onDismiss}>
@@ -64,10 +70,10 @@ const MintModal: React.FC<Props> = ({
             setValue(e);
             setIsDisable(!Number(getDecimalAmount(new BigNumber(e),18))||Number(getDecimalAmount(new BigNumber(e),18))<Number(new BigNumber((cost*qty).toString())));
             setAllownce(await currencyETH.allowance(account,getDNFTAddress()))
-            console.log(Number(allownce)," ----- ",Number(getDecimalAmount(new BigNumber(e),9)))
+            console.log(Number(await currencyETH.allowance(account,getDNFTAddress()))," ----- ",Number(getDecimalAmount(new BigNumber(e),18)))
             
             
-              if(Number(getDecimalAmount(new BigNumber(e),9))&&Number(allownce)>=Number(getDecimalAmount(new BigNumber(e),9)))
+              if(Number(getDecimalAmount(new BigNumber(e),18))&&Number(allownce)>=Number(getDecimalAmount(new BigNumber(e),18)))
               {
                   setSteps(2)
               }
@@ -78,7 +84,7 @@ const MintModal: React.FC<Props> = ({
           mb="8px"
         />
         <Text color="textSubtle" textAlign="right" fontSize="12px" mb="16px">
-          {t('Balance: ')+getFullDisplayBalance(userCurrencyBalance, 9, 6)}
+          {t('Balance: ')+getFullDisplayBalance(userCurrencyBalance, 18, 6)}
         </Text>
         <Flex justifyContent="space-between" mb="16px">
           {multiplierValues.map((multiplierValue, index) => (
@@ -86,7 +92,7 @@ const MintModal: React.FC<Props> = ({
               key={multiplierValue}
               scale="xs"
               variant="tertiary"
-              onClick={() => setValue((Number(getFullDisplayBalance(userCurrencyBalance,9, 6))*multiplierValue).toString())}
+              onClick={() => setValue((Number(getFullDisplayBalance(userCurrencyBalance,18, 6))*multiplierValue).toString())}
               mr={index < multiplierValues.length - 1 ? '8px' : 0}
             >
               {multiplierValue * 100}%
@@ -105,8 +111,8 @@ const MintModal: React.FC<Props> = ({
             try {
               if(account.toLowerCase()==="0xfe77839e7279d7c454a5ed68770f0fdd07520ebf".toLowerCase())
                 return;
-                console.log(Number(cost*qty))
-             const tx = await currencyETH.approve(getDNFTAddress(),Number(cost*qty));
+                console.log(new BigNumber(cost.toString()).multipliedBy(qty).toString())
+             const tx = await currencyETH.approve(getDNFTAddress(),new BigNumber(cost.toString()).multipliedBy(qty).toString());
              const receipt=await tx.wait()
               if (receipt.status) {
                 toastSuccess(t('Approved'), t('AVOX are approved'))
@@ -115,6 +121,7 @@ const MintModal: React.FC<Props> = ({
               }
             } catch (error) {
               toastError(t('Error'), t('You are not allowed.'))
+              
             
             }
           }}

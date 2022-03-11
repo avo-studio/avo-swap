@@ -207,9 +207,9 @@ export const useFarmAuctionContract = () => {
   return useMemo(() => getFarmAuctionContract(account ? library.getSigner() : library), [library, account])
 }
 
-export const useNftMarketContract = () => {
+export const useNftMarketContract = (address: string) => {
   const { library } = useActiveWeb3React()
-  return useMemo(() => getNftMarketContract(library.getSigner()), [library])
+  return useMemo(() => getNftMarketContract(address, library.getSigner()), [address, library])
 }
 
 export const useErc721CollectionContract = (collectionAddress: string) => {

@@ -6,20 +6,20 @@ import BigNumber from 'bignumber.js'
 import Page from 'components/Layout/Page'
 import PageHeader from 'components/PageHeader'
 import { useTranslation } from 'contexts/Localization'
-import { useDNFTContract } from 'hooks/useContract'
+import { useDNFTContract, useNftMarketContract } from 'hooks/useContract'
 import useToast from 'hooks/useToast'
 import React, { useEffect, useCallback, useState, useMemo, useRef } from 'react'
 import { Route, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import { getDNFTAddress } from 'utils/addressHelpers'
-import { getDNFTContract } from 'utils/contractHelpers'
-import SellModal from './sell/SellModal'
+import { getDNFTAddress, getNftMarketAddress } from 'utils/addressHelpers'
+import { getDNFTContract, getNftMarketContract } from 'utils/contractHelpers'
+import BuyModal from './BuyModal'
 
 const StyledCard = styled(Card)`
   align-self: center;
   display:block;
-  width:360px;
-  margin:10px;
+  width:500px;
+  margin:auto;
 `
 
 const FarmCardInnerContainer = styled(Flex)`
@@ -34,41 +34,45 @@ const ExpandingWrapper = styled.div`
   border-top: 2px solid ${({ theme }) => theme.colors.cardBorder};
   overflow: hidden;
 `
-class NFTModal{
-	image="";
 
-	description="";
 
-	name="";
-
-	id="";
-}
-
-const ViewNFTs: React.FC = () => {
+const BuyNFT: React.FC = () => {
   const { t } = useTranslation()
   const { account } = useWeb3React()
   const { toastError, toastSuccess } = useToast()
   const [mystate, setMystate] = useState<any>()
+  const [isOnSale, setIsOnSale] = useState(false)
   const [sellPrice, setSellPrice] = useState(0);
+  const marketcontract=useNftMarketContract(getNftMarketAddress());
   const hist=useHistory();
-
+  const tid = new URLSearchParams(hist.location.search).get('tid');
   
-
+const handleContributeSuccess = async (amount: BigNumber) => {
+  
+      toastSuccess(
+        t('Success!'),
+        t('You have contributed to this Market!'),
+      )
+    }
+    const [onPresentContributeModal] = useModal(
+    <BuyModal
+    tid={Number(tid)}
+    onSuccess={handleContributeSuccess}
+  />
+    )
   useEffect(()=>{
     
       
 
     async function loadData(){
       const contract = getDNFTContract(getDNFTAddress());
+     
+      const res=await marketcontract.NftInfos(tid)
+      setIsOnSale(res.isOnSale)
+      setSellPrice(Number(res.price))
       if(account)
       {
-        const nftsids=await contract.walletOfOwner(account);
-        const len=nftsids.length;
-        
-        const alldata=[];
-        for(let i=0;i<len;i++)
-        {
-            const uri=await contract.tokenURI(nftsids[i]);
+            const uri=await contract.tokenURI(Number(tid));
             
             try{
               const resp= await axios.get(uri,{
@@ -76,12 +80,12 @@ const ViewNFTs: React.FC = () => {
                     'content-type': 'application/json'
                 }
             });
-            alldata.push(<StyledCard key={i} isActive={!false}>
+            setMystate(<StyledCard isActive={!false}>
               <FarmCardInnerContainer>
                 
               <Flex justifyContent="space-between">
                   <Text>NFT Id:</Text>
-                  <Text bold>{Number(nftsids[i])}</Text>
+                  <Text bold>{Number(tid)}</Text>
                 </Flex>
                 <br/>
                 <Flex justifyContent="space-between">
@@ -94,16 +98,19 @@ const ViewNFTs: React.FC = () => {
                   <Text bold>{resp.data.description}</Text>
                 </Flex>
                 <br/>
-                <video style={{margin:"auto"}} width="300" controls autoPlay={!false}>
+                <video style={{margin:"auto"}} width="400" controls autoPlay={!false}>
             <source src={resp.data.image} type="video/mp4"/>
         </video>
         <br/>
-                
+                <Flex justifyContent="space-between">
+                  <Text>Selling Price</Text>
+                  <Text>{Number(res.price)/1000000000000000000} AVOX</Text>
+                </Flex>
+                <br/>
                 <Flex justifyContent="center">
-                <Button onClick={
-                  ()=>hist.push('/sellNFT?tid='.concat(Number(nftsids[i]).toString()))
-                  }>View</Button>
-                 
+                <Button   onClick={
+                  onPresentContributeModal
+                }>Buy</Button>
                 </Flex>
                 
               </FarmCardInnerContainer>
@@ -113,12 +120,12 @@ const ViewNFTs: React.FC = () => {
           }
           catch(e){
             const resp={nam:"N/A",desc:"N/A",img:"N/A"};
-            alldata.push(<StyledCard key={i} isActive={!false}>
+            setMystate(<StyledCard  isActive={!false}>
               <FarmCardInnerContainer>
                 
               <Flex justifyContent="space-between">
                   <Text>NFT Id:</Text>
-                  <Text bold>{Number(nftsids[i])}</Text>
+                  <Text bold>{Number(tid)}</Text>
                 </Flex>
                 <br/>
                 <Flex justifyContent="space-between">
@@ -131,16 +138,19 @@ const ViewNFTs: React.FC = () => {
                   <Text bold>{resp.desc}</Text>
                 </Flex>
                 <br/>
-                <video style={{margin:"auto"}} width="300" controls autoPlay={!false}>
+                <video style={{margin:"auto"}} width="400" controls autoPlay={!false}>
             <source src="/logo.mp4" type="video/mp4"/>
         </video>
         <br/>
-                
+                <Flex justifyContent="space-between">
+                  <Text>Selling Price</Text>
+                  <Text>{Number(res.price)/1000000000000000000} AVOX</Text>
+                </Flex>
+                <br/>
                 <Flex justifyContent="center">
-                <Button onClick={
-                  ()=>hist.push('/sellNFT?tid='.concat(Number(nftsids[i]).toString()))
-                  }>View</Button>
-                 
+                <Button   onClick={
+                  onPresentContributeModal
+                }>Buy</Button>
                 </Flex>
               </FarmCardInnerContainer>
         
@@ -149,12 +159,11 @@ const ViewNFTs: React.FC = () => {
           }
             
             
-        }
-         setMystate(alldata);
+        
       }
     }
     loadData();
-  },[account,sellPrice,t,toastSuccess,hist])
+  },[account,sellPrice,t,toastSuccess,hist,onPresentContributeModal,tid,isOnSale,toastError,marketcontract])
 
  
 
@@ -167,11 +176,11 @@ const ViewNFTs: React.FC = () => {
           {t('NFTs')}
         </Heading>
         <Heading scale="lg" color="text">
-          {t('All your NFTs')}
+          {t('Buy your NFTs')}
         </Heading>
         
       </PageHeader>
-      <Page style={{textAlign:"center",display:"flex",flexWrap:"wrap"}}>
+      <Page style={{textAlign:"center",display:"flex"}}>
       
         {mystate}
         
@@ -180,4 +189,4 @@ const ViewNFTs: React.FC = () => {
   )
 }
 
-export default ViewNFTs
+export default BuyNFT

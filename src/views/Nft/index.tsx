@@ -37,7 +37,6 @@ const Nft: React.FC = () => {
   const { toastError, toastSuccess } = useToast()
   const writeContract=useDNFTContract(getDNFTAddress());
   const { account } = useWeb3React()
-  const [mystate, setMystate] = useState({cost:0})
   const [ispaused, setIspaused] = useState(false);
 
   useEffect(()=>{
@@ -45,12 +44,8 @@ const Nft: React.FC = () => {
       const contract = getDNFTContract(getDNFTAddress());
       const ispause=await contract.paused.call();
       console.log(ispause)
-      const cost=await contract.costPublic.call();
-      if(account)
       
-      {
-        setMystate({cost})
-      }
+      
       setIspaused(ispause);
     }
     loadData();
@@ -66,7 +61,6 @@ const Nft: React.FC = () => {
 
   const [onPresentContributeModal] = useModal(
     <MintModal
-      cost={mystate.cost}
       qty={amountMint}
       onSuccess={handleContributeSuccess}
     />,

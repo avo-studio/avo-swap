@@ -25,6 +25,7 @@ import { SellingStage } from './types'
 import ConfirmStage from '../shared/ConfirmStage'
 import RemoveStage from './RemoveStage'
 import TransferStage from './TransferStage'
+import { getNftMarketAddress } from 'utils/addressHelpers'
 
 export const modalTitles = (stage: SellingStage, t: ContextApi['t']) => {
   switch (stage) {
@@ -88,7 +89,7 @@ const SellModal: React.FC<SellModalProps> = ({ variant, nftToSell, onDismiss }) 
   const { callWithGasPrice } = useCallWithGasPrice()
   const { toastSuccess } = useToast()
   const collectionContract = useErc721CollectionContract(nftToSell.collectionAddress)
-  const nftMarketContract = useNftMarketContract()
+  const nftMarketContract = useNftMarketContract(getNftMarketAddress())
   const dispatch = useAppDispatch()
 
   const isInvalidTransferAddress = transferAddress.length > 0 && !isAddress(transferAddress)

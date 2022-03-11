@@ -44,6 +44,7 @@ import ifoV1Abi from 'config/abi/ifoV1.json'
 import ifoV2Abi from 'config/abi/ifoV2.json'
 import ifoV3Abi from 'config/abi/ifoV3.json'
 import NFTAbi from 'config/abi/Nft.json'
+import NftMarketAbi from 'config/abi/NftMarket.json'
 import pointCenterIfo from 'config/abi/pointCenterIfo.json'
 import lotteryV2Abi from 'config/abi/lotteryV2.json'
 import masterChef from 'config/abi/masterchef.json'
@@ -62,7 +63,6 @@ import bunnySpecialPredictionAbi from 'config/abi/bunnySpecialPrediction.json'
 import bunnySpecialLotteryAbi from 'config/abi/bunnySpecialLottery.json'
 import farmAuctionAbi from 'config/abi/farmAuction.json'
 import anniversaryAchievementAbi from 'config/abi/anniversaryAchievement.json'
-import nftMarketAbi from 'config/abi/nftMarket.json'
 import nftSaleAbi from 'config/abi/nftSale.json'
 import pancakeSquadAbi from 'config/abi/pancakeSquad.json'
 import erc721CollectionAbi from 'config/abi/erc721collection.json'
@@ -165,8 +165,8 @@ export const getFarmAuctionContract = (signer?: ethers.Signer | ethers.providers
 export const getAnniversaryAchievementContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(anniversaryAchievementAbi, getAnniversaryAchievement(), signer)
 }
-export const getNftMarketContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
-  return getContract(nftMarketAbi, getNftMarketAddress(), signer)
+export const getNftMarketContract = (address: string, signer?: ethers.Signer | ethers.providers.Provider) => {
+  return getContract(NftMarketAbi, address, signer)
 }
 export const getNftSaleContract = (signer?: ethers.Signer | ethers.providers.Provider) => {
   return getContract(nftSaleAbi, getNftSaleAddress(), signer)
